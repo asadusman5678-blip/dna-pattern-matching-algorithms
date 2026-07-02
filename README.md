@@ -48,17 +48,34 @@ Searching a 48bp pattern against an excerpt of human chromosome 1 (GRCh38), comp
 
 Boyer-Moore needs **~6x fewer alignments and comparisons** to find the same match — the preprocessing overhead pays off fast on real genomic-scale data.
 
+### `03_edit_distance_and_overlap_graphs.ipynb`
+
+| Function | What it does |
+|---|---|
+| `global_edit_distance(x, y)` | Computes the standard (Levenshtein) edit distance between two full sequences using dynamic programming — the minimum number of insertions, deletions, and substitutions to turn one into the other. |
+| `approximate_substring_match(x, y)` | A modified edit-distance DP that allows the match to start anywhere in `y` without penalty, finding the best approximate occurrence of pattern `x` inside a longer text `y`. |
+| `overlap(a, b, min_length)` | Returns the length of the longest suffix of `a` that matches a prefix of `b`, if at least `min_length` — the basic building block for detecting overlaps between reads. |
+| `read_fastq(filename)` | Parses a FASTQ file into a list of read sequences. |
+| `read_fasta(filename)` | Reads a FASTA file into a single sequence string. |
+
+**What the notebook demonstrates:**
+- **Global edit distance**: aligning two full sequences end-to-end (e.g. distance of 11 between two 8bp/16bp test sequences).
+- **Approximate substring matching**: finding where a pattern best fits inside a much longer text, allowing mismatches — including scanning a full 800,000-base excerpt of chromosome 1 for a 16bp pattern, finding a best match with only 2 edits.
+- **Overlap graph construction for genome assembly**: using a k-mer index (k=30) to efficiently find which sequencing reads overlap with each other by at least `k` bases — the first step in assembling reads into a full genome. On `ERR266411_1.for_asm.fastq`, this finds 904,746 overlap edges across 7,161 reads with at least one outgoing edge. The k-mer index avoids the O(n²) cost of comparing every read against every other read directly.
+
 ## Repository structure
 
 ```
 dna-pattern-matching-algorithms/
 ├── 01_naive_matching_and_read_quality.ipynb
 ├── 02_boyer_moore_matching.ipynb
+├── 03_edit_distance_and_overlap_graphs.ipynb
 ├── bm_preproc.py              # Boyer-Moore preprocessing (bad char & good suffix tables)
 ├── kmer_index.py               # k-mer indexing helper for approximate matching
 ├── lambda_virus.fa             # ~49KB reference genome used in notebook 1
 ├── ERR037900_1.first1000.fastq # first 1000 reads, used for quality analysis
-├── chr1.GRCh38.excerpt.fasta   # excerpt of human chr1, used in notebook 2
+├── chr1.GRCh38.excerpt.fasta   # excerpt of human chr1, used in notebooks 2 & 3
+├── ERR266411_1.for_asm.fastq   # sequencing reads used for overlap graph in notebook 3
 ├── requirements.txt
 ├── .gitignore
 └── README.md
