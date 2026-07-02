@@ -95,3 +95,4 @@ Open either notebook and run all cells top to bottom. Both `bm_preproc.py` and `
 ## Background
 
 These implementations were developed while studying classic and modern algorithms for genomic sequence alignment — the same underlying ideas (exact matching, indexing, approximate matching) used in production tools like BWA and Bowtie for real-world read alignment.
+
